@@ -79,9 +79,9 @@ double rnd(){
 //frontに値を回すときのどうしたら学習するか、隣のoutにも値を渡して誤差を共有してXORを学習させる
 
 //hebbian w[i] = ALPHA * input[i] * output[i];
-void update(double **weight, double *input, double *error, int size){
+void update(double **weight, double *input, double error, int size){
 	for(int i = 0; i < size; i++){
-		(*weight)[i] += ALPHA * error[i] * input[i];	
+		(*weight)[i] += ALPHA * error * input[i];	
 	}	
 
 }
@@ -120,15 +120,13 @@ int main(){
 	init(&input, &weight, &out, size);
 	//print_matrix(size, 1, input, "input");
 
-	sina_c(&weight, size, 0);
 	for(int i = 0; i < NMAX; i++){
-		for()	
 		culc(&input,&weight,&out,size);
 		memcpy(input, out, sizeof(double) * size / 2);
 		input = (double *)realloc(input, sizeof(double) * size);	
 		out = (double *)realloc(out, sizeof(double) * size / 2);	
-		error = target[i] - out;
-		update(&weight, size, )
+		error = targets[i] - out[i];
+		update(&weight, input, error, size);
 		//print_matrix(size / 2, 1, input, "input");
 		print_matrix(size / 2, 1, out, "out");
 		print_matrix(size / 2, 1, weight, "weight");
