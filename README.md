@@ -1,9 +1,14 @@
 # OSAI
+<p>
 original parceptron code
+<p>
 now I making basicrlly functon
--one way file trans protocol
--That's may similer P2P network
--AI managed regardless protocol, browser, IOT, device, robot, for graphical
+<p>
+  -one way file trans protocol
+<p>
+  -That's may similer P2P network
+<p>
+  -AI managed regardless protocol, browser, IOT, device, robot, for graphical
 
 <p>
 #今は基本機能を構築中
