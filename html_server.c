@@ -27,7 +27,7 @@ char *parse(char* buffer){
         		perror("Error opening HTML file");
 			strncpy(filename, "err.html", sizeof(filename) - 1);
     		}
-		fclose(f);
+		if(f) fclose(f);
 		//TODO security
 		//filename = secrity(filename);
 		return filename;
