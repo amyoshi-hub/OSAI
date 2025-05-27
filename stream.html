@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Stream (JPEG)</title>
+</head>
+<body>
+  <img id="stream" src="test.jpg" width="640" height="360" alt="Live Stream">
+  
+  <script>
+    setInterval(() => {
+      const img = document.getElementById('stream');
+      img.src = 'test.jpg?cache=' + Date.now(); // キャッシュ防止
+    }, 200); // 200msごとに更新 (fps=5 ならOK)
+  </script>
+</body>
+</html>
