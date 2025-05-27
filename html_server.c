@@ -22,12 +22,15 @@ char *parse(char* buffer){
 		strcpy(filename, "index.html");
 	}else{
 		strncpy(filename, path, sizeof(filename) - 1);	
+		//TODO
+		/*
 		FILE *f = fopen(filename, "r");
     		if (!f) {
         		perror("Error opening HTML file");
 			strncpy(filename, "err.html", sizeof(filename) - 1);
     		}
 		if(f) fclose(f);
+		*/
 		//TODO security
 		//filename = secrity(filename);
 		return filename;
