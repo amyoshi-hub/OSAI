@@ -13,6 +13,7 @@
 #include <netinet/ip.h>
 #include <err.h>
 #define CHUNK_SIZE 1024
+#define END_CHUNK 0xFFFFFFFF
 
 /* チェックサム計算用UDP疑似ヘッダー */
 struct pseudo_hdr {
@@ -173,6 +174,7 @@ int main(int argc, char *argv[])
     long filesize;
     uint32_t chunk = 0;
     long sent_bytes = 0;
+    long chunk_len = CHUNK_SIZE;
 
     if (argc != 5)
         usage(argv[0]);
@@ -192,7 +194,6 @@ int main(int argc, char *argv[])
     dst.s_addr = inet_addr(argv[2]);
 
     while(sent_bytes < filesize){
-    	long chunk_len = CHUNK_SIZE;
     	if(filesize - sent_bytes < CHUNK_SIZE){
    		chunk_len = filesize - sent_bytes; 
     	}    
@@ -216,6 +217,24 @@ int main(int argc, char *argv[])
     	free(buf);
     	sent_bytes += chunk_len;
     	chunk++;
+    }
+
+    uint32_t end_chunk = UINT32_MAX;
+    chunk_len = 0;
+
+    packetsiz = sizeof(struct ip) + sizeof(struct udphdr) + 4 + chunk_len;
+    buf = malloc(packetsiz);
+    if(!buf) errx(1, "malloc (end chunk)");
+
+    build_ip(buf, &src, &dst, packetsiz);
+    build_udp(buf, &src, &dst, dport, END_CHUNK, data + sent_bytes, chunk_len);
+
+    memset(&to, 0, sizeof(struct sockaddr_in));
+    to.sin_addr = dst;
+    to.sin_port = htons(dport);
+    to.sin_family = AF_INET;
+    if (sendto(sd, buf, packetsiz, 0, (struct sockaddr *)&to, tolen) < 0) {
+    	perror("sendto");
     }
 
     close(sd);
