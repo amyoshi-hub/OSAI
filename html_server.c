@@ -11,29 +11,37 @@ char* secrity(char *filename){
 	//denney word を設定
 }
 
+char* get_content_type(const char* filename) {
+	if (strstr(filename, ".html")) return "text/html";
+	if (strstr(filename, ".css"))  return "text/css";
+	if (strstr(filename, ".js"))   return "application/javascript";
+	if (strstr(filename, ".jpg"))  return "image/jpeg";
+	if (strstr(filename, ".png"))  return "image/png";
+	if (strstr(filename, ".glb"))  return "model/gltf-binary";
+	return "application/octet-stream";
+}
+
+
 char *parse(char* buffer){
 	static char filename[256];
-	char method[8], path[256];
+	char method[8], path[256] = "";
 	if(sscanf(buffer, "%s %s", method, path) == 2){
-		if(path[0] == '/')	
-			memmove(path, path + 1, strlen(path));
-	}
-	if(strlen(path) == 0){
+	if(strcmp(path, "/") == 0){
 		strcpy(filename, "index.html");
 	}else{
+		memmove(path, path + 1, strlen(path));
 		strncpy(filename, path, sizeof(filename) - 1);	
-		//TODO
-		/*
-		FILE *f = fopen(filename, "r");
-    		if (!f) {
+		FILE *f;
+    		if ((f = fopen(filename, "r")) == NULL) {
         		perror("Error opening HTML file");
 			strncpy(filename, "err.html", sizeof(filename) - 1);
-    		}
-		if(f) fclose(f);
-		*/
+    		}else{
+			fclose(f);
+		}
 		//TODO security
 		//filename = secrity(filename);
 		return filename;
+	}
 	}
 
 	return "error.html";
@@ -41,6 +49,7 @@ char *parse(char* buffer){
 
 void handle_request(int client_socket) {
     char buffer[1024];
+    char header[512];
     int bytes_received;
     
     // リクエストを受け取る
@@ -75,10 +84,12 @@ void handle_request(int client_socket) {
     html_content[file_size] = '\0'; // Null-terminate the content
 
     // HTTPレスポンスを作成
-    const char *response_header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+    char *content_type = get_content_type(filename);
+
+    snprintf(header, sizeof(header), "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", content_type);
 
     // クライアントにレスポンスを送る
-    send(client_socket, response_header, strlen(response_header), 0);
+    send(client_socket, header, strlen(header), 0);
     send(client_socket, html_content, file_size, 0); // HTML ファイルの内容を送信
 
     // メモリの解放
