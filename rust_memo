@@ -1,0 +1,10 @@
+私がrust初学者なのでメモる
+
+変数はletで定義
+let v = 1;
+またmutで宣言されていないものは値の変更ができない、所有権
+型については基本的に省略できるが、引数にはヒントとして型をしっかり書いておくとよし
+
+file:
+let file = File::open("img.png").expect("failed to open");
+let mut reader = BufReader::new(file);
