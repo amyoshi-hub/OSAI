@@ -1,1 +1,1 @@
-test
+gcc html_server.c -o test -L. -lUdpImageSender
