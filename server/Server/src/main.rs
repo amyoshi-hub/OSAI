@@ -7,13 +7,19 @@ use std::io::Write;
 
 const END_SIG: u32 = 0xFFFFFFFF;
 
-fn main() {
+//portを指定できるようにしたほうがトラフィックが混乱しないかと
+fn set_udp_recv() -> (pnet::transport::TransportReceiver, File){
     let protocol = TransportProtocol::Ipv4(pnet::packet::ip::IpNextHeaderProtocols::Udp);
     let (mut _tx, mut rx) = transport_channel(4096, Layer4(protocol))
         .expect("Failed to create transport channel");
 
     let mut expected_chunk: u32 = 0;
     let mut file = File::create("received_image.png").expect("Failed to create file");
+    (rx, file)
+}
+
+fn recv_img(mut rx: pnet::transport::TransportReceiver, mut file: File) {
+    let mut expected_chunk: u32 = 0;
 
     println!("Waiting for UDP packets...");
 
@@ -42,10 +48,21 @@ fn main() {
                 expected_chunk += 1;
             } else {
                 println!("Out-of-order chunk: expected {}, got {}", expected_chunk, chunk_num);
-                // 再送要求やバッファリングはここで処理可能
+                //TODO
+                //再送　ロジック, そのチャンクまでzero fill
+                //if(expected_chunk < cunk_num){
+                //for(let i = 0; i < chunk_num; i++){
+                //  file.write_all(0: u32)
+                //}
+                //}
             }
         }
     }
+}
+
+fn main() {
+    let (rx, file) = set_udp_recv();    
+    recv_img(rx, file);
 
     println!("File saved as received_image.png");
 }

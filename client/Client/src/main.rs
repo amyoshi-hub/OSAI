@@ -2,13 +2,12 @@ use pnet::transport::{transport_channel, TransportChannelType::Layer4, Transport
 use pnet::packet::MutablePacket;
 use pnet::packet::udp::MutableUdpPacket;
 use pnet::packet::ip::IpNextHeaderProtocols;
-use pnet::packet::Packet;
 use std::net::Ipv4Addr;
 use std::fs::File;
 use std::io::Read;
 
 const END_SIG: u32 = 0xFFFFFFFF;
-const CHUNK_SIZE: usize = 8192;  // UDP Payload max 1024 - 4bytes chunk_id
+const CHUNK_SIZE: usize = 1472 - 8 - 4;  // UDP Payload max 1024 - 4bytes chunk_id
 
 fn build_udp_packet<'a>(
     buffer: &'a mut [u8],
@@ -28,16 +27,11 @@ fn build_udp_packet<'a>(
     packet
 }
 
-fn main() {
-    let src_ip = Ipv4Addr::new(192, 168, 1, 10);
-    let dst_ip = Ipv4Addr::new(127, 0, 0, 1);
-    let src_port = 40000;
-    let dst_port = 40000;
-
+fn file_send(src_ip: Ipv4Addr, src_port: u16, dst_ip: Ipv4Addr, dst_port: u16, filename: &str){
     let protocol = TransportProtocol::Ipv4(IpNextHeaderProtocols::Udp);
     let (mut tx, _) = transport_channel(4096, Layer4(protocol)).expect("Failed to open channel");
 
-    let mut file = File::open("test.png").expect("Failed to open file");
+    let mut file = File::open(filename).expect("Failed to open file");
     let mut buffer = [0u8; CHUNK_SIZE];
     let mut chunk_id = 0u32;
 
@@ -60,5 +54,17 @@ fn main() {
     tx.send_to(end_packet, std::net::IpAddr::V4(dst_ip)).expect("Failed to send end packet");
 
     println!("All chunks sent");
+}
+
+fn main() {
+    let src_ip = Ipv4Addr::new(192, 168, 1, 10);
+    let dst_ip = Ipv4Addr::new(127, 0, 0, 1);
+    let src_port = 40000;
+    let dst_port = 40000;
+    let filename = "test.png";
+    
+    file_send(src_ip, src_port, dst_ip, dst_port, filename);
+
+    
 }
 
