@@ -57,10 +57,10 @@ fn file_send(src_ip: Ipv4Addr, src_port: u16, dst_ip: Ipv4Addr, dst_port: u16, f
 }
 
 fn main() {
-    let src_ip = Ipv4Addr::new(192, 168, 1, 10);
-    let dst_ip = Ipv4Addr::new(127, 0, 0, 1);
-    let src_port = 40000;
-    let dst_port = 40000;
+    let src_ip = Ipv4Addr::new(172, 20, 10, 2);
+    let dst_ip = Ipv4Addr::new(172, 20, 10, 2);
+    let src_port = 12345;
+    let dst_port = 12345;
     let filename = "test.png";
     
     file_send(src_ip, src_port, dst_ip, dst_port, filename);
