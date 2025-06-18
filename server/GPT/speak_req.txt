@@ -1,0 +1,3 @@
+└─$ curl -X POST -H "Content-Type: application/json" -d '{"message": "hello world"}' http://localhost:5000/speak
+espeak-ng -v ja "こんにちは、世界" --stdout | aplay
+
